@@ -1,0 +1,9 @@
+Package: com.yourname.telegramsirifix
+Name: TelegramSiriFix
+Depends: mobilesubstrate
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: Fixes Telegram/Swiftgram crash by disabling SiriKit calls.
+Maintainer: Developer
+Author: Developer
+Section: Tweaks
