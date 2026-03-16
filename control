@@ -1,9 +1,9 @@
-Package: com.yourname.telegramsirifix
-Name: TelegramSiriFix
-Depends: mobilesubstrate
-Version: 1.0.0
+Package: com.telegram.sideloadfix
+Name: Telegram Sideload Fix
+Version: 1.0
 Architecture: iphoneos-arm
-Description: Fixes Telegram/Swiftgram crash by disabling SiriKit calls.
-Maintainer: Developer
-Author: Developer
+Description: Fix Telegram / Swiftgram sideload crashes in LiveContainer
+Maintainer: sideload
+Author: sideload
 Section: Tweaks
+Depends: firmware (>= 15.0)
