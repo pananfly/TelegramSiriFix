@@ -1,0 +1,28 @@
+name: Build Tweak
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Theos
+        run: |
+          export THEOS=~/theos
+          git clone --recursive https://github.com/theos/theos.git \$THEOS
+          git clone https://github.com/theos/sdks.git ~/theos/sdks
+          
+      - name: Build Package
+        run: |
+          export THEOS=~/theos
+          make package
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: TelegramSiriFix-deb
+          path: packages/*.deb
+EOF
