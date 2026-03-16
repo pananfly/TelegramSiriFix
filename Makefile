@@ -5,9 +5,9 @@ INSTALL_TARGET_PROCESSES = Telegram Swiftgram
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = TelegramSiriFix
+TWEAK_NAME = TelegramSideloadFix
 
-TelegramSideloadFix_FILES = Tweak.x
-TelegramSideloadFix_FRAMEWORKS = Foundation Intents CallKit
+TelegramSideloadFix_FILES = Tweak.xm
+TelegramSideloadFix_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
