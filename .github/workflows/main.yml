@@ -14,6 +14,9 @@ jobs:
 
       - name: Setup Theos
         run: |
+          # 安装 ldid 签名工具
+          brew install ldid
+          
           export THEOS=~/theos
           sudo rm -rf $THEOS
           git clone --depth 1 https://github.com/theos/theos.git $THEOS
@@ -25,17 +28,25 @@ jobs:
       - name: Build Package
         run: |
           export THEOS=~/theos
-          # 让 Theos 自动选择 sdks 文件夹下可用的最新 SDK
-          make package FINALPACKAGE=1
+          # 增加 -j8 参数启用多核编译加速
+          make package FINALPACKAGE=1 -j8
         
       - name: Extract Dylib
         run: |
           mkdir -p extracted
-          DEB_FILE=$(ls packages/*.deb | head -n 1)
-          ar x $DEB_FILE
-          tar -xf data.tar.*
-          cp Library/MobileSubstrate/DynamicLibraries/*.dylib extracted/
-          cp Library/MobileSubstrate/DynamicLibraries/*.plist extracted/
+          # 检查 packages 目录是否存在
+          if [ -d "packages" ]; then
+            DEB_FILE=$(ls packages/*.deb | head -n 1)
+            ar x $DEB_FILE
+            tar -xf data.tar.*
+            cp Library/MobileSubstrate/DynamicLibraries/*.dylib extracted/
+            cp Library/MobileSubstrate/DynamicLibraries/*.plist extracted/
+          else
+            # 如果没有生成 deb，尝试直接从 .theos 提取编译好的文件
+            echo "DEB not found, extracting from .theos/obj"
+            cp .theos/obj/*.dylib extracted/
+            cp *.plist extracted/
+          fi
 
       - name: Upload DEB
         uses: actions/upload-artifact@v4
