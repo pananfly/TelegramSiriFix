@@ -1,13 +1,13 @@
-TARGET := iphone:clang:latest:14.0
-ARCHS := arm64 arm64e
-DEBUG := 0
-FINALPACKAGE := 1
+ARCHS = arm64 arm64e
+TARGET = iphone:clang:latest:15.0
+
+INSTALL_TARGET_PROCESSES = Telegram Swiftgram
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = TelegramSiriFix
-TelegramSiriFix_FILES = Tweak.x
-TelegramSiriFix_CFLAGS = -fobjc-arc
-TelegramSiriFix_FRAMEWORKS = Intents
+TWEAK_NAME = TelegramSideloadFix
+
+TelegramSideloadFix_FILES = Tweak.x
+TelegramSideloadFix_FRAMEWORKS = Foundation Intents CallKit
 
 include $(THEOS_MAKE_PATH)/tweak.mk
