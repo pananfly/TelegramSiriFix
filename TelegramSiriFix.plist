@@ -1,1 +1,0 @@
-{ Filter = { Bundles = ( "ph.telegra.Telegraph", "org.telegram.Telegram-iOS", "app.swiftgram.ios" ); }; }
