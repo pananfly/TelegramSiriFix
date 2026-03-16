@@ -7,7 +7,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Theos
         run: |
@@ -20,9 +20,27 @@ jobs:
           export THEOS=~/theos
           make package
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+      - name: Extract Dylib
+        run: |
+          mkdir -p extracted
+          # 查找生成的 deb 文件
+          DEB_FILE=\$(ls packages/*.deb | head -n 1)
+          # 解压 deb (deb 本质是 ar 归档)
+          ar x \$DEB_FILE
+          # 解压 data.tar.* 获取内部文件结构
+          tar -xf data.tar.*
+          # 将 dylib 和 plist 移动到指定目录
+          cp Library/MobileSubstrate/DynamicLibraries/*.dylib extracted/
+          cp Library/MobileSubstrate/DynamicLibraries/*.plist extracted/
+
+      - name: Upload DEB
+        uses: actions/upload-artifact@v4
         with:
           name: TelegramSiriFix-deb
           path: packages/*.deb
-EOF
+
+      - name: Upload Dylib & Plist (For Sideload)
+        uses: actions/upload-artifact@v4
+        with:
+          name: TelegramSiriFix-Dylib-Files
+          path: extracted/*
