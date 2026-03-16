@@ -2,6 +2,10 @@ name: Build Tweak
 
 on: [workflow_dispatch]
 
+# 注入环境变量以支持最新的 Node.js 运行环境
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: macos-latest
@@ -12,24 +16,26 @@ jobs:
       - name: Setup Theos
         run: |
           export THEOS=~/theos
-          git clone --recursive https://github.com/theos/theos.git \$THEOS
-          git clone https://github.com/theos/sdks.git ~/theos/sdks
+          # 使用 --depth 1 加快克隆速度
+          git clone --depth 1 --recursive https://github.com/theos/theos.git $THEOS
+          # 自动获取最新的 SDK
+          git clone --depth 1 https://github.com/theos/sdks.git $THEOS/sdks
           
       - name: Build Package
         run: |
           export THEOS=~/theos
-          make package
-
+          # 强制指定 arm64 架构以减少编译冲突
+          make package FINALPACKAGE=1
+        
       - name: Extract Dylib
         run: |
           mkdir -p extracted
-          # 查找生成的 deb 文件
-          DEB_FILE=\$(ls packages/*.deb | head -n 1)
-          # 解压 deb (deb 本质是 ar 归档)
-          ar x \$DEB_FILE
-          # 解压 data.tar.* 获取内部文件结构
+          # 找到打包好的 deb 文件并解压
+          DEB_FILE=$(ls packages/*.deb | head -n 1)
+          ar x $DEB_FILE
+          # 解压数据层
           tar -xf data.tar.*
-          # 将 dylib 和 plist 移动到指定目录
+          # 提取 dylib 和 plist
           cp Library/MobileSubstrate/DynamicLibraries/*.dylib extracted/
           cp Library/MobileSubstrate/DynamicLibraries/*.plist extracted/
 
@@ -39,7 +45,7 @@ jobs:
           name: TelegramSiriFix-deb
           path: packages/*.deb
 
-      - name: Upload Dylib & Plist (For Sideload)
+      - name: Upload Dylib & Plist
         uses: actions/upload-artifact@v4
         with:
           name: TelegramSiriFix-Dylib-Files
